@@ -1,3 +1,3 @@
 # SRCR
  
-Prolog assignment #1
+Prolog assignment
