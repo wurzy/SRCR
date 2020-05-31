@@ -8,15 +8,17 @@
 
 % criarCaminho(1,183,791,C).
 
+% Predicado que cria um caminho entre duas paragens na mesma carreira.
 criarCaminho(_,Fim,Fim,[Fim]).
 
-criarCaminho(Paragem1,Inicio,Fim,[Inicio|Caminho]):-
-    paragem(Paragem1,Id1, Inicio, _, _, _, _, _, _, _, _, _),
+criarCaminho(Carreira,Inicio,Fim,[Inicio|Caminho]):-
+    paragem(Carreira,Id1, Inicio, _, _, _, _, _, _, _, _, _),
     Id2 is Id1 + 1,
-    paragem(Paragem1,Id2, Adjacente, _, _, _, _, _, _, _, _, _),
-    criarCaminho(Paragem1, Adjacente, Fim, Caminho).
+    paragem(Carreira,Id2, Adjacente, _, _, _, _, _, _, _, _, _),
+    criarCaminho(Carreira, Adjacente, Fim, Caminho).
 
+% Predicado que cria um caminho entre duas paragens.
 caminho(Inicio,Fim,_,Caminho):-
-    paragem(Paragem1,_, Inicio, _, _, _, _, _, _, _, _, _),
-    paragem(Paragem1,_ ,Fim, _, _, _, _, _, _, _, _, _),
-    criarCaminho(Paragem1,Inicio,Fim,Caminho).
+    paragem(Carreira,_, Inicio, _, _, _, _, _, _, _, _, _),
+    paragem(Carreira,_ ,Fim, _, _, _, _, _, _, _, _, _),
+    criarCaminho(Carreira,Inicio,Fim,Caminho).
