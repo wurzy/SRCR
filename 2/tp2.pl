@@ -6,17 +6,14 @@
 
 :- use_module(library(lists)).
 
-% criarCaminho(1,183,791,C).
-% carreirasAdjacentesCarreira(1,Lista); true.
-% paragem\([0-9]+, [0-9]+, 183,              183: 1,7,10,12,13,15
-% caminho(957,1001,_,X).
-
 % ------------------------------------------------ PREDICADOS AUXILIARES -------------------------------------------------------------
 %-----------------------------------------------------------------------------
 % Remove elementos repetidos de uma lista
 remrep([],[]).
 remrep([H|T],C) :- member(H,T),!, remrep(T,C).
 remrep([H|T],[H|C]) :- remrep(T,C).
+
+removehead([_|T], T).
 
 %-----------------------------------------------------------------------------
 % Retorna a lista de carreiras a que uma paragem pertence.
@@ -75,9 +72,8 @@ verificaMatriz(X,Y,Res):-
     flatten(Y,F2),
     verificaMatrizAux(F1,F2,Res).
     
-% verificaMatriz( [[1,2,3],[4,5,6]], [[7,8,9],[10,11,12]],R).
 % ------------------------------------------------------ RESOLUÇÃO -------------------------------------------------------------------
-
+% ################################################### ALGORITMO BASE ###################################################
 %-----------------------------------------------------------------------------
 % Predicado que cria um caminho entre duas paragens, se a carreira for igual.
 caminho(Inicio,Fim,_,Caminho):-
@@ -99,8 +95,11 @@ caminho(Inicio,Fim,_,Caminho):-
     paragem(Carreira1,_,Escolhido, _, _, _, _, _, _, _, _, _), % vou buscar esse comum
     paragem(Carreira2,_,Escolhido, _, _, _, _, _, _, _, _, _), % vou buscar esse comum
     criarCaminho(Carreira1, Inicio, Escolhido, Resultante1),
-    criarCaminho(Carreira2, Escolhido, Fim, Resultante2),
+    criarCaminho(Carreira2, Escolhido, Fim, Resultante2x),
+    removehead(Resultante2x,Resultante2),
     append(Resultante1, Resultante2, Caminho).
 
 %-----------------------------------------------------------------------------
 % Predicado que cria um caminho entre duas paragens, se tiver uma carreira intermédia comum
+
+% ######################################################################################################################
