@@ -40,7 +40,17 @@ criarCaminho(_,Fim,Fim,[Fim]):- !.
 
 criarCaminho(Carreira,Inicio,Fim,[Inicio|Caminho]):-
     paragem(Carreira,Id1, Inicio, _, _, _, _, _, _, _, _, _),
+    paragem(Carreira,IdAux, Fim, _, _, _, _, _, _, _, _, _),
+    Id1 < IdAux,
     Id2 is Id1 + 1,
+    paragem(Carreira,Id2, Adjacente, _, _, _, _, _, _, _, _, _),
+    criarCaminho(Carreira, Adjacente, Fim, Caminho).
+
+criarCaminho(Carreira,Inicio,Fim,[Inicio|Caminho]):-
+    paragem(Carreira,Id1, Inicio, _, _, _, _, _, _, _, _, _),
+    paragem(Carreira,IdAux, Fim, _, _, _, _, _, _, _, _, _),
+    Id1 > IdAux,
+    Id2 is Id1 - 1,
     paragem(Carreira,Id2, Adjacente, _, _, _, _, _, _, _, _, _),
     criarCaminho(Carreira, Adjacente, Fim, Caminho).
 
@@ -68,7 +78,7 @@ verificaMatriz(X,Y,Res):-
 
 %-----------------------------------------------------------------------------
 % Predicado que cria um caminho entre duas paragens, se a carreira for igual.
-caminho(Inicio,Fim,[],Caminho):-
+caminho(Inicio,Fim,_,Caminho):-
     paragem(Carreira,_, Inicio, _, _, _, _, _, _, _, _, _),
     paragem(Carreira,_ ,Fim, _, _, _, _, _, _, _, _, _),
     criarCaminho(Carreira,Inicio,Fim,Caminho),
@@ -77,10 +87,19 @@ caminho(Inicio,Fim,[],Caminho):-
 %-----------------------------------------------------------------------------
 % Predicado que cria um caminho entre duas paragens, se tiver um ponto de junção comum
 % caminho(957,1001,_,X).
-caminho(Inicio,Fim,Historico,Caminho):-
+caminho(Inicio,Fim,_,Caminho):-
     paragem(Carreira1,_, Inicio, _, _, _, _, _, _, _, _, _),
     paragem(Carreira2,_ ,Fim, _, _, _, _, _, _, _, _, _),
-    carreirasAdjacentesCarreira(Carreira1,Adjs1),
+    %carreirasAdjacentesCarreira(Carreira1,Adjs1),
     carreirasAdjacentesCarreira(Carreira2,Adjs2),
-    verificaMatriz(Adjs1,Adjs2,[Nodo|Resto]),
-    \+ memberchk(Nodo,Historico).
+    %verificaMatriz(Adjs1,Adjs2,Comuns), % procura as carreiras adjacentes comuns
+    flatten(Adjs2,Help), 
+    member(Carreira1,Help), % procura se a carreira original está nas atingiveis pela carreira que contem o no final
+    paragem(Carreira1,_,Escolhido, _, _, _, _, _, _, _, _, _), % vou buscar esse comum
+    paragem(Carreira2,_,Escolhido, _, _, _, _, _, _, _, _, _), % vou buscar esse comum
+    criarCaminho(Carreira1, Inicio, Escolhido, Resultante1),
+    criarCaminho(Carreira2, Escolhido, Fim, Resultante2),
+    append(Resultante1, Resultante2, Caminho).
+
+%-----------------------------------------------------------------------------
+% Predicado que cria um caminho entre duas paragens, se tiver uma carreira intermédia comum
