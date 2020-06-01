@@ -95,7 +95,7 @@ caminho(Inicio,Fim,_,Caminho):-
     paragem(Carreira1,_,Escolhido, _, _, _, _, _, _, _, _, _), % vou buscar esse comum
     paragem(Carreira2,_,Escolhido, _, _, _, _, _, _, _, _, _), % vou buscar esse comum
     criarCaminho(Carreira1, Inicio, Escolhido, Resultante1),
-    criarCaminho(Carreira2, Escolhido, Fim, Resultante2x),
+    criarCaminho(Carreira2, Escolhido, Fim, Resultante2x), % fica aqui com um elemento a mais, tira-se
     removehead(Resultante2x,Resultante2),
     append(Resultante1, Resultante2, Caminho).
 
