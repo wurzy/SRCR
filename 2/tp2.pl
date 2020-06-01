@@ -9,9 +9,11 @@
 % criarCaminho(1,183,791,C).
 % carreirasAdjacentesCarreira(1,Lista); true.
 % paragem\([0-9]+, [0-9]+, 183,              183: 1,7,10,12,13,15
+% caminho(957,1001,_,X).
 
 % ------------------------------------------------ PREDICADOS AUXILIARES -------------------------------------------------------------
-
+%-----------------------------------------------------------------------------
+% Remove elementos repetidos de uma lista
 remrep([],[]).
 remrep([H|T],C) :- member(H,T),!, remrep(T,C).
 remrep([H|T],[H|C]) :- remrep(T,C).
@@ -86,7 +88,6 @@ caminho(Inicio,Fim,_,Caminho):-
 
 %-----------------------------------------------------------------------------
 % Predicado que cria um caminho entre duas paragens, se tiver um ponto de junção comum
-% caminho(957,1001,_,X).
 caminho(Inicio,Fim,_,Caminho):-
     paragem(Carreira1,_, Inicio, _, _, _, _, _, _, _, _, _),
     paragem(Carreira2,_ ,Fim, _, _, _, _, _, _, _, _, _),
