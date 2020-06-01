@@ -1,3 +1,17 @@
+% Adjacentes a uma paragem
+adjacente(Paragem1,Paragem2):-
+    paragem(C, I, Paragem1, _, _, _, _, _, _, _, _, _),
+    Id is I+1,
+    paragem(C, Id, Paragem2, _, _, _, _, _, _, _, _, _).
+
+adjacente(Paragem1,Paragem2):-
+    paragem(C, I, Paragem1, _, _, _, _, _, _, _, _, _),
+    Id is I-1,
+    paragem(C, Id, Paragem2, _, _, _, _, _, _, _, _, _).
+
+% Bi-direcional
+adjacente(Paragem1,Paragem2):-
+    adjacente(Paragem2,Paragem1).
 
 %% CARREIRA 1
 

@@ -11,23 +11,28 @@
 % paragem\([0-9]+, [0-9]+, 183,              183: 1,7,10,12,13,15
 
 % ------------------------------------------------ PREDICADOS AUXILIARES -------------------------------------------------------------
+
+remrep([],[]).
+remrep([H|T],C) :- member(H,T),!, remrep(T,C).
+remrep([H|T],[H|C]) :- remrep(T,C).
+
 %-----------------------------------------------------------------------------
 % Retorna a lista de carreiras a que uma paragem pertence.
-carreirasAdjacentes(Paragem,Lista):-
-    findall(Carreira, (paragem(Carreira,_,Paragem, _, _, _, _, _, _, _, _, _)),
+carreirasAdjacentes(Carreira1,Paragem,Lista):-
+    findall(Carreira, (paragem(Carreira,_,Paragem, _, _, _, _, _, _, _, _, _), Carreira1 \= Carreira),
     Lista).
 
 %-----------------------------------------------------------------------------
 % Retorna a lista de carreiras adjacentes a uma determinada carreira.
-carreirasAdjacentesCarreiraAux([], []).
+carreirasAdjacentesCarreiraAux(_, [], []).
 
-carreirasAdjacentesCarreiraAux([Paragem|Paragens],[Lista1|Lista]):-
-    carreirasAdjacentes(Paragem,Lista1),
-    carreirasAdjacentesCarreiraAux(Paragens,Lista).
+carreirasAdjacentesCarreiraAux(Carreira,[Paragem|Paragens],[Lista1|Lista]):-
+    carreirasAdjacentes(Carreira,Paragem,Lista1),
+    carreirasAdjacentesCarreiraAux(Carreira,Paragens,Lista).
 
 carreirasAdjacentesCarreira(Carreira, Lista):-
     findall(Paragem, (paragem(Carreira,_,Paragem, _, _, _, _, _, _, _, _, _)),Paragens),
-    carreirasAdjacentesCarreiraAux(Paragens,Lista).
+    carreirasAdjacentesCarreiraAux(Carreira,Paragens,Lista).
 
 %-----------------------------------------------------------------------------
 % Retorna a lista de elementos um Inicio e um Fim na mesma carreira.
@@ -40,37 +45,42 @@ criarCaminho(Carreira,Inicio,Fim,[Inicio|Caminho]):-
     criarCaminho(Carreira, Adjacente, Fim, Caminho).
 
 %-----------------------------------------------------------------------------
-% Verifica se um elemento duma lista pertence a outra lista
-verificaMatriz([], _):- false.
+% Retorna todos os elementos comuns a ambas as matrizes.
+verificaMatrizAux([], _, []).
 
-verificaMatriz([L1|_], Matriz):-
-    verificaLista(L1,Matriz), !.
+verificaMatrizAux(_, [], []).
 
-verificaMatriz([_|L2], Matriz):-
-    verificaMatriz(L2,Matriz).
+verificaMatrizAux([L1|Resto],X, [L1|Res]):-
+    member(L1, X),
+    verificaMatrizAux(Resto,X,Res), !.
+    
+verificaMatrizAux([_|R],X, Res):-
+    verificaMatrizAux(R,X,Res),
+    !.
 
-%-----------------------------------------------------------------------------
-% Verifica se um elemento duma matriz pertence a outra
-verificaMatriz([], _):- false.
-
-verificaMatriz([L1|_], Matriz):-
-    verificaLista(L1,Matriz), !.
-
-verificaMatriz([_|L2], Matriz):-
-    verificaMatriz(L2,Matriz).
+verificaMatriz(X,Y,Res):-
+    flatten(X,F1),
+    flatten(Y,F2),
+    verificaMatrizAux(F1,F2,Res).
+    
+% verificaMatriz( [[1,2,3],[4,5,6]], [[7,8,9],[10,11,12]],R).
 % ------------------------------------------------------ RESOLUÇÃO -------------------------------------------------------------------
 
 %-----------------------------------------------------------------------------
 % Predicado que cria um caminho entre duas paragens, se a carreira for igual.
-caminho(Inicio,Fim,_,Caminho):-
+caminho(Inicio,Fim,[],Caminho):-
     paragem(Carreira,_, Inicio, _, _, _, _, _, _, _, _, _),
     paragem(Carreira,_ ,Fim, _, _, _, _, _, _, _, _, _),
     criarCaminho(Carreira,Inicio,Fim,Caminho),
     !.
-%-----------------------------------------------------------------------------
 
+%-----------------------------------------------------------------------------
+% Predicado que cria um caminho entre duas paragens, se tiver um ponto de junção comum
+% caminho(957,1001,_,X).
 caminho(Inicio,Fim,Historico,Caminho):-
     paragem(Carreira1,_, Inicio, _, _, _, _, _, _, _, _, _),
     paragem(Carreira2,_ ,Fim, _, _, _, _, _, _, _, _, _),
-    carreirasAdjacentes(Carreira1,Adjs1),
-    carreirasAdjacentes(Carreira2,Adjs2)
+    carreirasAdjacentesCarreira(Carreira1,Adjs1),
+    carreirasAdjacentesCarreira(Carreira2,Adjs2),
+    verificaMatriz(Adjs1,Adjs2,[Nodo|Resto]),
+    \+ memberchk(Nodo,Historico).
