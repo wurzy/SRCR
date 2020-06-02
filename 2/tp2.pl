@@ -101,13 +101,23 @@ caminho(Inicio,Fim,_,Caminho):-
 
 %-----------------------------------------------------------------------------
 % Predicado que cria um caminho entre duas paragens, se tiverem alguma carreira em comum
-caminho(Inicio,Fim,Historico,Caminho):-
+caminho(Inicio,Fim,[Comum|Historico],Caminho):-
     paragem(Carreira1,_, Inicio, _, _, _, _, _, _, _, _, _),
     paragem(Carreira2,_ ,Fim, _, _, _, _, _, _, _, _, _),
     carreirasAdjacentesCarreira(Carreira1,Adjs1),
     carreirasAdjacentesCarreira(Carreira2,Adjs2),
-    verificaMatriz(Adjs1,Adjs2,[CarreiraComum|Outras]), % procura as carreiras adjacentes comuns
-    \+ memberchk(CarreiraComum, Historico). % não foi utilizada a carreira ainda
+    verificaMatriz(Adjs1,Adjs2,Comuns), % procura as carreiras adjacentes comuns
+    member(Comum,Comuns), % retira um elemento comum
+    \+ memberchk(Comum, Historico),
+    paragem(Comum, _, Escolhido, _, _, _, _, _, _, _, _, _), % 
+    paragem(Carreira1, _, Escolhido, _, _, _, _, _, _, _, _, _), % 
+    paragem(Comum, _, Escolhido2, _, _, _, _, _, _, _, _, _), % 
+    paragem(Carreira2, _, Escolhido2, _, _, _, _, _, _, _, _, _), % 
+    criarCaminho(Carreira1,Inicio,Escolhido, Resultante1),
+    criarCaminho(Comum,Escolhido,Escolhido2, Resultante2),
+    criarCaminho(Carreira2,Escolhido2,Fim,Resultante3),
+    append(Resultante1, Resultante2, CaminhoAux),
+    append(Resultante3, CaminhoAux, Caminho).
 
 %-----------------------------------------------------------------------------
 % Predicado que testa se as paragens são isoladas
