@@ -3,3 +3,6 @@ carreirasAdjacentesCarreira(1,Lista); true.
 paragem\([0-9]+, [0-9]+, 183,              183: 1,7,10,12,13,15
 caminho(957,1001,_,X).
 verificaMatriz( [[1,2,3],[4,5,6]], [[7,8,9],[10,11,12]],R).
+caminho(183,487,_,R).     grande
+caminho(183,73,_,R).      impossivel
+caminho(37,25,_,R).       volta pra tras
