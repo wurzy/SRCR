@@ -83,6 +83,22 @@ caminho(Inicio,Fim,_,Caminho):-
     !.
 
 %-----------------------------------------------------------------------------
+% Predicado que testa se as paragens são isoladas
+caminho(_,Fim,_,_):-
+    paragem(Carreira2,_ ,Fim, _, _, _, _, _, _, _, _, _),
+    carreirasAdjacentesCarreira(Carreira2,Adjs2),
+    flatten(Adjs2,Help), 
+    length(Help,0), % é uma carreira totalmente isolada
+    !,fail.  
+
+caminho(Inicio,_,_,_):-
+    paragem(Carreira1,_, Inicio, _, _, _, _, _, _, _, _, _),
+    carreirasAdjacentesCarreira(Carreira1,Adjs),
+    flatten(Adjs,Help), 
+    length(Help,0), % é uma carreira totalmente isolada
+    !,fail.  
+    
+%-----------------------------------------------------------------------------
 % Predicado que cria um caminho entre duas paragens, se tiver um ponto de junção comum
 caminho(Inicio,Fim,_,Caminho):-
     paragem(Carreira1,_, Inicio, _, _, _, _, _, _, _, _, _),
@@ -118,22 +134,6 @@ caminho(Inicio,Fim,[Comum|Historico],Caminho):-
     criarCaminho(Carreira2,Escolhido2,Fim,Resultante3),
     append(Resultante1, Resultante2, CaminhoAux),
     append(Resultante3, CaminhoAux, Caminho).
-
-%-----------------------------------------------------------------------------
-% Predicado que testa se as paragens são isoladas
-caminho(_,Fim,_,_):-
-    paragem(Carreira2,_ ,Fim, _, _, _, _, _, _, _, _, _),
-    carreirasAdjacentesCarreira(Carreira2,Adjs2),
-    flatten(Adjs2,Help), 
-    length(Help,0), % é uma carreira totalmente isolada
-    !,fail.  
-
-caminho(Inicio,_,_,_):-
-    paragem(Carreira1,_, Inicio, _, _, _, _, _, _, _, _, _),
-    carreirasAdjacentesCarreira(Carreira1,Adjs),
-    flatten(Adjs,Help), 
-    length(Help,0), % é uma carreira totalmente isolada
-    !,fail.  
 
 %-----------------------------------------------------------------------------
 % Predicado que cria um caminho entre duas paragens, se tiver uma carreira intermédia comum
