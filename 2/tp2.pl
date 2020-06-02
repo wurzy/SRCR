@@ -100,6 +100,32 @@ caminho(Inicio,Fim,_,Caminho):-
     append(Resultante1, Resultante2, Caminho).
 
 %-----------------------------------------------------------------------------
+% Predicado que cria um caminho entre duas paragens, se tiverem alguma carreira em comum
+caminho(Inicio,Fim,Historico,Caminho):-
+    paragem(Carreira1,_, Inicio, _, _, _, _, _, _, _, _, _),
+    paragem(Carreira2,_ ,Fim, _, _, _, _, _, _, _, _, _),
+    carreirasAdjacentesCarreira(Carreira1,Adjs1),
+    carreirasAdjacentesCarreira(Carreira2,Adjs2),
+    verificaMatriz(Adjs1,Adjs2,[CarreiraComum|Outras]), % procura as carreiras adjacentes comuns
+    \+ memberchk(CarreiraComum, Historico). % não foi utilizada a carreira ainda
+
+%-----------------------------------------------------------------------------
+% Predicado que testa se as paragens são isoladas
+caminho(_,Fim,_,_):-
+    paragem(Carreira2,_ ,Fim, _, _, _, _, _, _, _, _, _),
+    carreirasAdjacentesCarreira(Carreira2,Adjs2),
+    flatten(Adjs2,Help), 
+    length(Help,0), % é uma carreira totalmente isolada
+    !,fail.  
+
+caminho(Inicio,_,_,_):-
+    paragem(Carreira1,_, Inicio, _, _, _, _, _, _, _, _, _),
+    carreirasAdjacentesCarreira(Carreira1,Adjs),
+    flatten(Adjs,Help), 
+    length(Help,0), % é uma carreira totalmente isolada
+    !,fail.  
+
+%-----------------------------------------------------------------------------
 % Predicado que cria um caminho entre duas paragens, se tiver uma carreira intermédia comum
 
 % ######################################################################################################################
