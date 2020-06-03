@@ -76,7 +76,7 @@ verificaMatriz(X,Y,Res):-
 % ################################################### ALGORITMO BASE ###################################################
 %-----------------------------------------------------------------------------
 % Predicado que cria um caminho entre duas paragens, se a carreira for igual.
-caminho(Inicio,Fim,_,Caminho):-
+caminho(Inicio,Fim,[],Caminho):-
     paragem(Carreira,_, Inicio, _, _, _, _, _, _, _, _, _),
     paragem(Carreira,_ ,Fim, _, _, _, _, _, _, _, _, _),
     criarCaminho(Carreira,Inicio,Fim,Caminho),
@@ -97,7 +97,7 @@ caminho(Inicio,_,_,_):-
     flatten(Adjs,Help), 
     length(Help,0), % é uma carreira totalmente isolada
     !,fail.  
-    
+
 %-----------------------------------------------------------------------------
 % Predicado que cria um caminho entre duas paragens, se tiver um ponto de junção comum
 caminho(Inicio,Fim,_,Caminho):-
@@ -117,23 +117,26 @@ caminho(Inicio,Fim,_,Caminho):-
 
 %-----------------------------------------------------------------------------
 % Predicado que cria um caminho entre duas paragens, se tiverem alguma carreira em comum
-caminho(Inicio,Fim,[Comum|Historico],Caminho):-
+caminho(Inicio,Fim,_,Caminho):-
     paragem(Carreira1,_, Inicio, _, _, _, _, _, _, _, _, _),
     paragem(Carreira2,_ ,Fim, _, _, _, _, _, _, _, _, _),
     carreirasAdjacentesCarreira(Carreira1,Adjs1),
     carreirasAdjacentesCarreira(Carreira2,Adjs2),
     verificaMatriz(Adjs1,Adjs2,Comuns), % procura as carreiras adjacentes comuns
     member(Comum,Comuns), % retira um elemento comum
-    \+ memberchk(Comum, Historico),
+    %\+ memberchk(Comum, Historico),
     paragem(Comum, _, Escolhido, _, _, _, _, _, _, _, _, _), % 
     paragem(Carreira1, _, Escolhido, _, _, _, _, _, _, _, _, _), % 
     paragem(Comum, _, Escolhido2, _, _, _, _, _, _, _, _, _), % 
     paragem(Carreira2, _, Escolhido2, _, _, _, _, _, _, _, _, _), % 
+    %caminho(Inicio,Escolhido,Historico,Resultante1),
+    %caminho(Escolhido,Escolhido2,Historico,Resultante2),
+    %caminho(Escolhido2,Fim,Historico,Resultante3),
     criarCaminho(Carreira1,Inicio,Escolhido, Resultante1),
     criarCaminho(Comum,Escolhido,Escolhido2, Resultante2),
-    criarCaminho(Carreira2,Escolhido2,Fim,Resultante3),
+    criarCaminho(Carreira2,Escolhido2,Fim, Resultante3),
     append(Resultante1, Resultante2, CaminhoAux),
-    append(Resultante3, CaminhoAux, Caminho).
+    append(CaminhoAux, Resultante3, Caminho).
 
 %-----------------------------------------------------------------------------
 % Predicado que cria um caminho entre duas paragens, se tiver uma carreira intermédia comum
