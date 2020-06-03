@@ -146,4 +146,9 @@ caminho(Inicio,Fim,_,Caminho):-
 %    criarCaminho(Inicio,Adj,X),
 %    caminho(Adj,Fim,H,Caminho).
 
+caminho(Inicio,Fim,H,Caminho):-
+    caminho(Inicio,178,H,CAux),
+    caminho(178,Fim,H,C2),
+    append(CAux,C2,Caminho).
+
 % ######################################################################################################################

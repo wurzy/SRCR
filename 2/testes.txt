@@ -22,8 +22,6 @@ caminho(583,732,H,R).
 caminho(583,178,H,R).
 caminho(583,817,H,R).
 caminho(583,1009,H,R). 
-
-crashes
-
+caminho(97,526,H,R). 
 caminho(583,712,H,R). 
 caminho(583,59,H,R). 
