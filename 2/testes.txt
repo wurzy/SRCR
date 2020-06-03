@@ -18,10 +18,10 @@ caminho(37,25,_,R).       volta pra tras
 
 consegue
 
-caminho(583,732,H,R).
-caminho(583,178,H,R).
-caminho(583,817,H,R).
-caminho(583,1009,H,R). 
-caminho(97,526,H,R). 
-caminho(583,712,H,R). 
-caminho(583,59,H,R). 
+caminho(583,732,R).
+caminho(583,178,R).
+caminho(583,817,R).
+caminho(583,1009,R). 
+caminho(97,526,R). 
+caminho(583,712,R). 
+caminho(583,59,R). 

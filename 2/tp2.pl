@@ -1,10 +1,12 @@
 :- include('povoamento2.pl').
+:- include('adjacentes.pl').
 
 :- set_prolog_flag( discontiguous_warnings,off ).
 :- set_prolog_flag( single_var_warnings,off ).
-:- set_prolog_flag( unknown,fail ).
+%:- set_prolog_flag( unknown,fail ).
 
 :- use_module(library(lists)).
+:- use_module(library(statistics)).
 
 % ------------------------------------------------ PREDICADOS AUXILIARES -------------------------------------------------------------
 %-----------------------------------------------------------------------------
@@ -73,10 +75,10 @@ verificaMatriz(X,Y,Res):-
     verificaMatrizAux(F1,F2,Res).
     
 % ------------------------------------------------------ RESOLUÇÃO -------------------------------------------------------------------
-% ################################################### ALGORITMO BASE ###################################################
+% ###################################################### ALGORITMO INFORMADO #########################################################
 %-----------------------------------------------------------------------------
 % Predicado que cria um caminho entre duas paragens, se a carreira for igual.
-caminho(Inicio,Fim,[],Caminho):-
+caminho(Inicio,Fim,Caminho):-
     paragem(Carreira,_, Inicio, _, _, _, _, _, _, _, _, _),
     paragem(Carreira,_ ,Fim, _, _, _, _, _, _, _, _, _),
     criarCaminho(Carreira,Inicio,Fim,Caminho),
@@ -84,14 +86,14 @@ caminho(Inicio,Fim,[],Caminho):-
 
 %-----------------------------------------------------------------------------
 % Predicado que testa se as paragens são isoladas
-caminho(_,Fim,_,_):-
+caminho(_,Fim,_):-
     paragem(Carreira2,_ ,Fim, _, _, _, _, _, _, _, _, _),
     carreirasAdjacentesCarreira(Carreira2,Adjs2),
     flatten(Adjs2,Help), 
     length(Help,0), % é uma carreira totalmente isolada
     !,fail.  
 
-caminho(Inicio,_,_,_):-
+caminho(Inicio,_,_):-
     paragem(Carreira1,_, Inicio, _, _, _, _, _, _, _, _, _),
     carreirasAdjacentesCarreira(Carreira1,Adjs),
     flatten(Adjs,Help), 
@@ -100,7 +102,7 @@ caminho(Inicio,_,_,_):-
 
 %-----------------------------------------------------------------------------
 % Predicado que cria um caminho entre duas paragens, se tiver um ponto de junção comum
-caminho(Inicio,Fim,_,Caminho):-
+caminho(Inicio,Fim,Caminho):-
     paragem(Carreira1,_, Inicio, _, _, _, _, _, _, _, _, _),
     paragem(Carreira2,_ ,Fim, _, _, _, _, _, _, _, _, _),
     %carreirasAdjacentesCarreira(Carreira1,Adjs1),
@@ -117,7 +119,7 @@ caminho(Inicio,Fim,_,Caminho):-
 
 %-----------------------------------------------------------------------------
 % Predicado que cria um caminho entre duas paragens, se tiverem alguma carreira em comum intermédia
-caminho(Inicio,Fim,_,Caminho):-
+caminho(Inicio,Fim,Caminho):-
     paragem(Carreira1,_, Inicio, _, _, _, _, _, _, _, _, _),
     paragem(Carreira2,_ ,Fim, _, _, _, _, _, _, _, _, _),
     carreirasAdjacentesCarreira(Carreira1,Adjs1),
@@ -146,9 +148,9 @@ caminho(Inicio,Fim,_,Caminho):-
 %    criarCaminho(Inicio,Adj,X),
 %    caminho(Adj,Fim,H,Caminho).
 
-caminho(Inicio,Fim,H,Caminho):-
-    caminho(Inicio,178,H,CAux),
-    caminho(178,Fim,H,C2),
+caminho(Inicio,Fim,Caminho):-
+    caminho(Inicio,178,CAux),
+    caminho(178,Fim,C2),
     append(CAux,C2,Caminho).
 
-% ######################################################################################################################
+% ###############################################################################################################################
