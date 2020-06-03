@@ -1,4 +1,4 @@
-:- include('povoamento.pl').
+:- include('povoamento2.pl').
 
 :- set_prolog_flag( discontiguous_warnings,off ).
 :- set_prolog_flag( single_var_warnings,off ).
@@ -116,7 +116,7 @@ caminho(Inicio,Fim,_,Caminho):-
     append(Resultante1, Resultante2, Caminho).
 
 %-----------------------------------------------------------------------------
-% Predicado que cria um caminho entre duas paragens, se tiverem alguma carreira em comum
+% Predicado que cria um caminho entre duas paragens, se tiverem alguma carreira em comum intermédia
 caminho(Inicio,Fim,_,Caminho):-
     paragem(Carreira1,_, Inicio, _, _, _, _, _, _, _, _, _),
     paragem(Carreira2,_ ,Fim, _, _, _, _, _, _, _, _, _),
@@ -139,6 +139,11 @@ caminho(Inicio,Fim,_,Caminho):-
     append(CaminhoAux, Resultante3, Caminho).
 
 %-----------------------------------------------------------------------------
-% Predicado que cria um caminho entre duas paragens, se tiver uma carreira intermédia comum
+% Predicado que cria um caminho entre duas paragens, se nada for sucedido da pesquisa informada
+%caminho(Inicio,Fim,H,[X|Caminho]):-
+%    paragem(_,_, Inicio, _, _, _, _, _, _, _, _, _),
+%    adjacente(Inicio,Adj),
+%    criarCaminho(Inicio,Adj,X),
+%    caminho(Adj,Fim,H,Caminho).
 
 % ######################################################################################################################
