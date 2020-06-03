@@ -10,6 +10,11 @@ caminho(37,25,_,R).       volta pra tras
 
 
 
+caminho2_2(183,499,['Vimeca', 'SCoTTURB'],R).
+caminho2_2(745,156,['Vimeca'],R). 
+
+
+
 2 -> 1001 caminho(1001,703,_,R).
 2->15 312
 15->23 703
@@ -25,3 +30,11 @@ caminho(583,1009,R).
 caminho(97,526,R). 
 caminho(583,712,R). 
 caminho(583,59,R). 
+
+
+
+
+carreiras(Paragem,Total):-
+    findall(Carreira, (paragem(Carreira,_,183, _, _, _, _, _, _, _, _, _)),Lista),length(Lista,Total).
+
+caminho2(745,171,R).
