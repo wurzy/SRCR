@@ -1,4 +1,4 @@
-:- include('povoamento2.pl').
+:- include('povoamento.pl').
 :- include('adjacentes.pl').
 
 :- set_prolog_flag( discontiguous_warnings,off ).
