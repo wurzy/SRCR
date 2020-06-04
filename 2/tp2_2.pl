@@ -121,8 +121,73 @@ caminho2_4(Inicio,Fim,Maior) :-
     caminho2(Inicio,Fim,Caminho),
     calculaMax(Caminho,Maior).
 
+% 5. Escolher o menor percurso (usando critério menor número de paragens).
+
+% 6. Escolher o percurso mais rápido (usando critério da distância).
+
 % 7. Escolher o percurso que passe apenas por abrigos com publicidade.
+caminho2_7(Inicio,Fim,Caminho) :-
+    paragem(_,_ ,Inicio, _, _, _, _, 'Yes', _, _, _, _),
+    paragem(_,_ ,Fim, _, _, _, _, 'Yes', _, _, _, _),
+    bfs7([[Inicio]],Fim,CaminhoAux),
+    reverse(CaminhoAux,Caminho). 
+
+%---------------------------------------------------------------------------------
+% Se estiver na paragem final termina. 
+bfs7([[Fim|Caminho]|_],Fim,[Fim|Caminho]).
+
+%---------------------------------------------------------------------------------
+% Se não, extende o caminho atual por todas as paragens que o conseguem fazer e coloca na fila de espera para serem verificados, reiterando pelos novos caminhos encontrados.
+bfs7([Caminho1|Caminhos], Fim, Caminho) :-
+    extende7(Caminho1,NovosCaminhos),
+    append(Caminhos, NovosCaminhos, Caminhos1),
+    bfs7(Caminhos1, Fim, Caminho).
+%---------------------------------------------------------------------------------
+% Predicado que extende o caminho utilizando todas as paragens que não estejam dentro do caminho, e que pertençam apenas às operadoras escolhidas.
+extende7([Paragem|Caminho], NovosCaminhos) :-
+    findall([Paragem2, Paragem|Caminho],(adjacentes(Paragem, Paragem2),\+ memberchk(Paragem2,[Paragem|Caminho]),
+    paragem(_,_ ,Paragem2, _, _, _, _, 'Yes', _, _, _, _)),NovosCaminhos),!.
+
+extende7(_,[]).
+%---------------------------------------------------------------------------------
 
 % 8. Escolher o percurso que passe apenas por paragens abrigadas.
 
+caminho2_8(Inicio,Fim,Caminho) :-
+    paragem(_,_ ,Inicio, _, _, _, Tipo, _, _, _, _, _),
+    paragem(_,_ ,Fim, _, _, _, Tipo2, _, _, _, _, _),
+    Tipo \= 'Sem Abrigo',
+    Tipo2 \= 'Sem Abrigo',
+    bfs8([[Inicio]],Fim,CaminhoAux),
+    reverse(CaminhoAux,Caminho). 
+
+%---------------------------------------------------------------------------------
+% Se estiver na paragem final termina. 
+bfs8([[Fim|Caminho]|_],Fim,[Fim|Caminho]).
+
+%---------------------------------------------------------------------------------
+% Se não, extende o caminho atual por todas as paragens que o conseguem fazer e coloca na fila de espera para serem verificados, reiterando pelos novos caminhos encontrados.
+bfs8([Caminho1|Caminhos], Fim, Caminho) :-
+    extende8(Caminho1,NovosCaminhos),
+    append(Caminhos, NovosCaminhos, Caminhos1),
+    bfs8(Caminhos1, Fim, Caminho).
+%---------------------------------------------------------------------------------
+% Predicado que extende o caminho utilizando todas as paragens que não estejam dentro do caminho, e que pertençam apenas às operadoras escolhidas.
+extende8([Paragem|Caminho], NovosCaminhos) :-
+    findall([Paragem2, Paragem|Caminho],(adjacentes(Paragem, Paragem2),\+ memberchk(Paragem2,[Paragem|Caminho]),
+    paragem(_,_ ,Paragem2, _, _, _, Tipo, _, _, _, _, _), Tipo \= 'Sem Abrigo'),NovosCaminhos),!.
+
+extende8(_,[]).
+
 % 9. Escolher um ou mais pontos intermédios por onde o percurso deverá passar.
+removehead([_|T], T).
+removeLast(L, T):- reverse(L,Rev),removehead(Rev,Rem), reverse(Rem,T).
+
+caminho2_9(Inicio,Fim,[],Caminho):-caminho2(Inicio,Fim,Caminho).
+
+caminho2_9(Inicio,Fim,[Intermedio|T],Caminho) :-
+    caminho2(Inicio,Intermedio,Parcial1),
+    removeLast(Parcial1,Parcial),
+    caminho2_9(Intermedio,Fim,T,X),
+    append(Parcial,X,Caminho).
+

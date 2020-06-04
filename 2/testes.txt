@@ -38,3 +38,6 @@ carreiras(Paragem,Total):-
     findall(Carreira, (paragem(Carreira,_,183, _, _, _, _, _, _, _, _, _)),Lista),length(Lista,Total).
 
 caminho2(745,171,R).
+
+
+ caminho2_9(608,254,[249],R).
