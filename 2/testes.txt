@@ -41,3 +41,5 @@ caminho2(745,171,R).
 
 
  caminho2_9(608,254,[249],R).
+
+ findall(R,(caminho(183,185,R)),L).

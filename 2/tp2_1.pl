@@ -73,6 +73,14 @@ verificaMatriz(X,Y,Res):-
     flatten(X,F1),
     flatten(Y,F2),
     verificaMatrizAux(F1,F2,Res).
+
+%-----------------------------------------------------------------------------
+% Verifica se lista tem elementos repetidos.
+temRepetidos(L) :-
+    sort(L, S),
+    length(L, X),
+    length(S, Y),
+    X > Y.
     
 % ------------------------------------------------------ RESOLUÇÃO -------------------------------------------------------------------
 % ###################################################### ALGORITMO INFORMADO #########################################################
@@ -141,16 +149,57 @@ caminho(Inicio,Fim,Caminho):-
     append(CaminhoAux, Resultante3, Caminho).
 
 %-----------------------------------------------------------------------------
-% Predicado que cria um caminho entre duas paragens, se nada for sucedido da pesquisa informada
-%caminho(Inicio,Fim,H,[X|Caminho]):-
-%    paragem(_,_, Inicio, _, _, _, _, _, _, _, _, _),
-%    adjacente(Inicio,Adj),
-%    criarCaminho(Inicio,Adj,X),
-%    caminho(Adj,Fim,H,Caminho).
-
+% Predicado que cria um caminho entre duas paragens não antigíveis pela informação acima, usando a paragem terminal
 caminho(Inicio,Fim,Caminho):-
     caminho(Inicio,178,CAux),
     caminho(178,Fim,C2),
     append(CAux,C2,Caminho).
 
 % ###############################################################################################################################
+
+% ---------------------------------------------------- SUB-ALINEAS --------------------------------------------------------------
+
+% 2. Selecionar apenas algumas das operadoras de transporte para um determinado percurso.
+
+% -------------------------------------------------------------------------------------
+% 3. Excluir um ou mais operadores de transporte para o percurso.
+
+% -------------------------------------------------------------------------------------
+% 4. Identificar quais as paragens com o maior número de carreiras num determinado percurso.
+carreiras(Paragem,Total):-
+    findall(Carreira, (paragem(Carreira,_,Paragem, _, _, _, _, _, _, _, _, _)),
+    Lista),
+    length(Lista,Total).
+
+% Verifica para todas as paragens qual aquela que pertence ao maior número de carreiras e retorna-o.
+calculaMax(T,Max):-
+    maplist(carreiras, T, MaxAux),
+    max_list(MaxAux, Max).
+
+caminho_4(Inicio,Fim,Maior) :-
+    caminho(Inicio,Fim,Caminho),
+    calculaMax(Caminho,Maior).
+
+% -------------------------------------------------------------------------------------
+% 5. Escolher o menor percurso (usando critério menor número de paragens).
+
+% -------------------------------------------------------------------------------------
+% 6. Escolher o percurso mais rápido (usando critério da distância).
+
+% -------------------------------------------------------------------------------------
+% 7. Escolher o percurso que passe apenas por abrigos com publicidade.
+
+% -------------------------------------------------------------------------------------
+% 8. Escolher o percurso que passe apenas por paragens abrigadas.
+
+% -------------------------------------------------------------------------------------
+% 9. Escolher um ou mais pontos intermédios por onde o percurso deverá passar.
+removeLast(L, T):- reverse(L,Rev),removehead(Rev,Rem), reverse(Rem,T).
+
+caminho_9(Inicio,Fim,[],Caminho):-caminho(Inicio,Fim,Caminho).
+
+caminho_9(Inicio,Fim,[Intermedio|T],Caminho) :-
+    caminho(Inicio,Intermedio,Parcial1),
+    removeLast(Parcial1,Parcial),
+    caminho_9(Intermedio,Fim,T,X),
+    append(Parcial,X,Caminho).
