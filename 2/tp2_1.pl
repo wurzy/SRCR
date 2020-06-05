@@ -398,7 +398,6 @@ caminho_3(Inicio,Fim,Operadoras,Caminho):-
     caminho_3(178,Fim,Operadoras,C2),
     append(CAux,C2,Caminho).
 
-
 % -------------------------------------------------------------------------------------
 % 4. Identificar quais as paragens com o maior número de carreiras num determinado percurso.
 carreiras(Paragem,Total):-
