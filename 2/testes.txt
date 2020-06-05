@@ -67,3 +67,26 @@ caminho2ListaPontos([183, 791, 595, 182, 499],R).
 
 caminhoParagens(Inicio,Fim,N):-
     caminho(Inicio,Fim,R),length(R,N).
+
+
+
+
+
+
+
+
+
+
+
+
+
+    \begin{figure}[H]
+  \begin{center}
+   \includegraphics{98.png}
+   \caption{Meta-predicado \textbf{teste}}
+  \end{center}
+\end{figure}
+
+
+
+time(caminho2(712,342,R)),length(R,N).

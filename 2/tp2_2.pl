@@ -117,9 +117,11 @@ calculaMax(T,Max):-
     maplist(carreiras, T, MaxAux),
     max_list(MaxAux, Max).
     
-caminho2_4(Inicio,Fim,Maior) :-
+caminho2_4(Inicio,Fim,X/Maior) :-
     caminho2(Inicio,Fim,Caminho),
-    calculaMax(Caminho,Maior).
+    calculaMax(Caminho,Maior),
+    member(X,Caminho),
+    carreiras(X,Maior).
 
 % 5. Escolher o menor percurso (usando critério menor número de paragens).
 % Predicado que calcula qual a menor lista num conjunto de listas.
@@ -132,15 +134,15 @@ tamanhoMenor(ListOfLists, Min) :-
     lengths(ListOfLists, Lengths),
     min_list(Lengths, Min).
 
-menorLista(ListOfLists, Min) :-
+menorLista(ListOfLists, Min/Len) :-
     tamanhoMenor(ListOfLists, Len),
     member(Min, ListOfLists),
     length(Min, Len).
 
 % -------------------------------------------------------------------------------------
-menorCaminhoParagens(Inicio,Fim,Caminho):-
+menorCaminhoParagens(Inicio,Fim,Caminho/D):-
     findall(R,(caminho2(Inicio,Fim,R)),L),
-    menorLista(L,Caminho).
+    menorLista(L,Caminho/D).
 
 % -------------------------------------------------------------------------------------
 % 6. Escolher o percurso mais rápido (usando critério da distância).
@@ -181,16 +183,16 @@ distMenor(ListOfLists, Min) :-
     dists(ListOfLists, Lengths),
     min_list(Lengths, Min).
 
-menorDistLista([[[H1,H2]|R]|T],[[H3,H4]|R2]) :-
+menorDistLista([[[H1,H2]|R]|T],[[H3,H4]|R2]/Len) :-
     distMenor([[[H1,H2]|R]|T], Len),
     member([[H3,H4]|R2],[[[H1,H2]|R]|T]),
     distCaminho([H3,H4],[[H3,H4]|R2],Len).
 
 % -------------------------------------------------------------------------------------
-menorCaminhoDist(Inicio,Fim,Caminho):-
+menorCaminhoDist(Inicio,Fim,Caminho/P):-
     findall(R,(caminho2(Inicio,Fim,R)),L),
     maplist(caminho2ListaPontos, L, LPontos),
-    menorDistLista(LPontos,Pontos),
+    menorDistLista(LPontos,Pontos/P),
     member(Caminho,L),
     caminho2ListaPontos(Caminho,Pontos).
 

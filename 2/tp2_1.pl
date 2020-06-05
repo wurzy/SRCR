@@ -151,7 +151,8 @@ caminho(Inicio,Fim,Caminho):-
 % Predicado que cria um caminho entre duas paragens não antigíveis pela informação acima, usando a paragem terminal
 caminho(Inicio,Fim,Caminho):-
     caminho(Inicio,178,CAux),
-    caminho(178,Fim,C2),
+    caminho(178,Fim,C2A),
+    removehead(C2A,C2),
     append(CAux,C2,Caminho).
 
 % ###############################################################################################################################
@@ -275,7 +276,8 @@ caminho_2(Inicio,Fim,Operadoras,Caminho):-
 caminho_2(Inicio,Fim,Operadoras,Caminho):-
     member('LT', Operadoras),
     caminho_2(Inicio,178,Operadoras,CAux),
-    caminho_2(178,Fim,Operadoras,C2),
+    caminho_2(178,Fim,Operadoras,C2A),
+    removehead(C2A,C2),
     append(CAux,C2,Caminho).
 
 % -------------------------------------------------------------------------------------
@@ -395,7 +397,8 @@ caminho_3(Inicio,Fim,Operadoras,Caminho):-
 caminho_3(Inicio,Fim,Operadoras,Caminho):-
     \+ memberchk('LT', Operadoras),
     caminho_3(Inicio,178,Operadoras,CAux),
-    caminho_3(178,Fim,Operadoras,C2),
+    caminho_3(178,Fim,Operadoras,C2A),
+    removehead(C2A,C2),
     append(CAux,C2,Caminho).
 
 % -------------------------------------------------------------------------------------
@@ -410,9 +413,11 @@ calculaMax(T,Max):-
     maplist(carreiras, T, MaxAux),
     max_list(MaxAux, Max).
 
-caminho_4(Inicio,Fim,Maior) :-
+caminho_4(Inicio,Fim,X/Maior) :-
     caminho(Inicio,Fim,Caminho),
-    calculaMax(Caminho,Maior).
+    calculaMax(Caminho,Maior),
+    member(X,Caminho),
+    carreiras(X,Maior).
 
 % -------------------------------------------------------------------------------------
 % 5. Escolher o menor percurso (usando critério menor número de paragens).
@@ -427,15 +432,15 @@ tamanhoMenor(ListOfLists, Min) :-
     lengths(ListOfLists, Lengths),
     min_list(Lengths, Min).
 
-menorLista(ListOfLists, Min) :-
+menorLista(ListOfLists, Min/Len) :-
     tamanhoMenor(ListOfLists, Len),
     member(Min, ListOfLists),
     length(Min, Len).
 
 % -------------------------------------------------------------------------------------
-menorCaminhoParagens(Inicio,Fim,Caminho):-
+menorCaminhoParagens(Inicio,Fim,Caminho/D):-
     findall(R,(caminho(Inicio,Fim,R)),L),
-    menorLista(L,Caminho).
+    menorLista(L,Caminho/D).
 
 % -------------------------------------------------------------------------------------
 % 6. Escolher o percurso mais rápido (usando critério da distância).
@@ -478,16 +483,16 @@ distMenor(ListOfLists, Min) :-
     dists(ListOfLists, Lengths),
     min_list(Lengths, Min).
 
-menorDistLista([[[H1,H2]|R]|T],[[H3,H4]|R2]) :-
+menorDistLista([[[H1,H2]|R]|T],[[H3,H4]|R2]/Len) :-
     distMenor([[[H1,H2]|R]|T], Len),
     member([[H3,H4]|R2],[[[H1,H2]|R]|T]),
     distCaminho([H3,H4],[[H3,H4]|R2],Len).
 
 % -------------------------------------------------------------------------------------
-menorCaminhoDist(Inicio,Fim,Caminho):-
+menorCaminhoDist(Inicio,Fim,Caminho/P):-
     findall(R,(caminho(Inicio,Fim,R)),L),
     maplist(caminho2ListaPontos, L, LPontos),
-    menorDistLista(LPontos,Pontos),
+    menorDistLista(LPontos,Pontos/P),
     member(Caminho,L),
     caminho2ListaPontos(Caminho,Pontos).
 
@@ -558,7 +563,8 @@ caminho_7(Inicio,Fim,Caminho):-
     paragem(_,_, Inicio, _, _, _, _, 'Yes', _, _, _, _),
     paragem(_,_ ,Fim, _, _, _, _, 'Yes', _, _, _, _),
     caminho_7(Inicio,178,CAux),
-    caminho_7(178,Fim,C2),
+    caminho_7(178,Fim,C2A),
+    removehead(C2A,C2),
     append(CAux,C2,Caminho).
 
 % -------------------------------------------------------------------------------------
@@ -640,7 +646,8 @@ caminho_8(Inicio,Fim,Caminho):-
     paragem(_,_ ,Fim, _, _, _, Tipo2, _, _, _, _, _),
     Tipo2 \= 'Sem Abrigo',
     caminho_8(Inicio,178,CAux),
-    caminho_8(178,Fim,C2),
+    caminho_8(178,Fim,C2A),
+    removehead(C2A,C2),
     append(CAux,C2,Caminho).
 
 % -------------------------------------------------------------------------------------
