@@ -82,8 +82,11 @@ temRepetidos(L) :-
     length(S, Y),
     X > Y.
     
-% ------------------------------------------------------ RESOLUÇÃO -------------------------------------------------------------------
+% 1. Calcular um trajeto entre dois pontos.
+
 % ###################################################### ALGORITMO INFORMADO #########################################################
+
+
 %-----------------------------------------------------------------------------
 % Predicado que cria um caminho entre duas paragens, se a carreira for igual.
 caminho(Inicio,Fim,Caminho):-
@@ -113,9 +116,7 @@ caminho(Inicio,_,_):-
 caminho(Inicio,Fim,Caminho):-
     paragem(Carreira1,_, Inicio, _, _, _, _, _, _, _, _, _),
     paragem(Carreira2,_ ,Fim, _, _, _, _, _, _, _, _, _),
-    %carreirasAdjacentesCarreira(Carreira1,Adjs1),
     carreirasAdjacentesCarreira(Carreira2,Adjs2),
-    %verificaMatriz(Adjs1,Adjs2,Comuns), % procura as carreiras adjacentes comuns
     flatten(Adjs2,Help), 
     member(Carreira1,Help), % procura se a carreira original está nas atingiveis pela carreira que contem o no final
     paragem(Carreira1,_,Escolhido, _, _, _, _, _, _, _, _, _), % vou buscar esse comum
@@ -134,14 +135,10 @@ caminho(Inicio,Fim,Caminho):-
     carreirasAdjacentesCarreira(Carreira2,Adjs2),
     verificaMatriz(Adjs1,Adjs2,Comuns), % procura as carreiras adjacentes comuns
     member(Comum,Comuns), % retira um elemento comum
-    %\+ memberchk(Comum, Historico),
     paragem(Comum, _, Escolhido, _, _, _, _, _, _, _, _, _), % 
     paragem(Carreira1, _, Escolhido, _, _, _, _, _, _, _, _, _), % 
     paragem(Comum, _, Escolhido2, _, _, _, _, _, _, _, _, _), % 
     paragem(Carreira2, _, Escolhido2, _, _, _, _, _, _, _, _, _), % 
-    %caminho(Inicio,Escolhido,Historico,Resultante1),
-    %caminho(Escolhido,Escolhido2,Historico,Resultante2),
-    %caminho(Escolhido2,Fim,Historico,Resultante3),
     criarCaminho(Carreira1,Inicio,Escolhido, Resultante1),
     criarCaminho(Comum,Escolhido,Escolhido2, Resultante2x),
     removehead(Resultante2x,Resultante2),
@@ -421,14 +418,79 @@ caminho_4(Inicio,Fim,Maior) :-
 % -------------------------------------------------------------------------------------
 % 5. Escolher o menor percurso (usando critério menor número de paragens).
 
+% Predicado que calcula qual a menor lista num conjunto de listas.
+lengths([],[]).
+lengths([H|T], [LH|LengthsT]) :-
+    length(H, LH),
+    lengths(T, LengthsT).
 
+tamanhoMenor(ListOfLists, Min) :-
+    lengths(ListOfLists, Lengths),
+    min_list(Lengths, Min).
 
+menorLista(ListOfLists, Min) :-
+    tamanhoMenor(ListOfLists, Len),
+    member(Min, ListOfLists),
+    length(Min, Len).
+
+% -------------------------------------------------------------------------------------
+menorCaminhoParagens(Inicio,Fim,Caminho):-
+    findall(R,(caminho(Inicio,Fim,R)),L),
+    menorLista(L,Caminho).
 
 % -------------------------------------------------------------------------------------
 % 6. Escolher o percurso mais rápido (usando critério da distância).
+% Predicado que calcula qual o caminho que percorre a menor distância num conjunto de caminhos.
 
+% -------------------------------------------------------------------------------------
+% Predicado que calcula a distancia euclideana entre 2 pontos 
+d([P|Ps], [Q|Qs], D) :-
+    soma_dif_sq(Ps, Qs, (P-Q)^2, R),
+    D is sqrt(R).
 
+soma_dif_sq([], [], V, V).
+soma_dif_sq([P|Ps], [Q|Qs], V0, V+V0) :-
+    soma_dif_sq(Ps, Qs, (P-Q)^2, V).
 
+% -------------------------------------------------------------------------------------
+% Predicado que guarda a lista de coordenadas de todas as paragens de um caminho
+caminho2ListaPontos([],[]).
+
+caminho2ListaPontos([H|T], [[P1,P2]|R]):-
+    paragem(_,_ ,H, P1, P2, _, _, _, _, _, _, _),
+    caminho2ListaPontos(T,R),
+    !.
+
+distCaminho(_,[],0).
+
+distCaminho(Atual,[H|T],R):-
+    d(Atual,H,Soma),
+    distCaminho(H,T,Soma2),
+    R is Soma + Soma2.
+
+% -------------------------------------------------------------------------------------
+% Predicado que calcula qual a menor lista num conjunto de listas.
+dists([],[]).
+dists([[[H1,H2]|R]|T], [LH|Dists]) :-
+    distCaminho([H1,H2],[[H1,H2]|R],LH),
+    dists(T, Dists).
+
+distMenor(ListOfLists, Min) :-
+    dists(ListOfLists, Lengths),
+    min_list(Lengths, Min).
+
+menorDistLista([[[H1,H2]|R]|T],[[H3,H4]|R2]) :-
+    distMenor([[[H1,H2]|R]|T], Len),
+    member([[H3,H4]|R2],[[[H1,H2]|R]|T]),
+    distCaminho([H3,H4],[[H3,H4]|R2],Len).
+
+% -------------------------------------------------------------------------------------
+menorCaminhoDist(Inicio,Fim,Caminho):-
+    findall(R,(caminho(Inicio,Fim,R)),L),
+    maplist(caminho2ListaPontos, L, LPontos),
+    menorDistLista(LPontos,Pontos),
+    member(Caminho,L),
+    caminho2ListaPontos(Caminho,Pontos).
 
 % -------------------------------------------------------------------------------------
 % 7. Escolher o percurso que passe apenas por abrigos com publicidade.
